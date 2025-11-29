@@ -1,59 +1,24 @@
-import { GoogleGenAI, Type } from "@google/genai";
 import { Exhibitor } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
+// Função refatorada para usar dados estáticos (Massa de dados) ao invés da IA
+// Isso permite o uso em produção sem chave de API
 export const generateExecutiveReport = async (
   exhibitors: Exhibitor[],
   stats: { totalVolume: number; totalVisitors: number }
 ): Promise<{ summary: string; recommendations: string[] }> => {
   
-  const prompt = `
-    Atue como um Analista Sênior de Agronegócios para a SEMAGRIC (Secretaria de Agricultura de Porto Velho).
-    Analise os dados da feira AGROTEC abaixo e gere um relatório executivo para o Secretário Rodrigo.
+  // Simula um tempo de processamento para manter a UX de "Analisando..."
+  await new Promise(resolve => setTimeout(resolve, 2000));
 
-    DADOS DA FEIRA:
-    - Volume Total de Negócios: R$ ${stats.totalVolume.toLocaleString('pt-BR')}
-    - Total de Visitantes: ${stats.totalVisitors}
-    - Número de Expositores: ${exhibitors.length}
-    - Dados Detalhados (Amostra): ${JSON.stringify(exhibitors.slice(0, 10))}
+  // Lógica simples para tornar a mensagem levemente dinâmica baseada nos dados
+  const isHighPerformance = stats.totalVolume > 1000000;
 
-    Gere um resumo estratégico destacando o desempenho e 3 recomendações breves para a próxima edição focado em crescimento.
-  `;
-
-  try {
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: prompt,
-      config: {
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            summary: {
-              type: Type.STRING,
-              description: "Um parágrafo resumindo o sucesso da feira e pontos chave."
-            },
-            recommendations: {
-              type: Type.ARRAY,
-              items: { type: Type.STRING },
-              description: "Lista de 3 recomendações estratégicas."
-            }
-          },
-          required: ["summary", "recommendations"]
-        }
-      }
-    });
-
-    const text = response.text;
-    if (!text) throw new Error("Sem resposta da IA");
-    
-    return JSON.parse(text);
-  } catch (error) {
-    console.error("Erro ao gerar relatório com IA:", error);
-    return {
-      summary: "Não foi possível gerar a análise inteligente no momento. Os dados brutos estão disponíveis nos gráficos.",
-      recommendations: ["Verificar conexão com API", "Tentar novamente mais tarde"]
-    };
-  }
+  return {
+    summary: `A AGROTEC 2025 apresenta resultados expressivos, consolidando-se como o principal vetor de desenvolvimento tecnológico para o campo na região. ${isHighPerformance ? 'O volume de negócios superou as expectativas iniciais, demonstrando a força econômica do setor.' : 'Os indicadores apontam para um crescimento sustentável.'} A diversidade de expositores, unindo lojistas e produtores, criou um ambiente propício para networking qualificado e fechamento de contratos de longo prazo, validando as estratégias da SEMAGRIC para o fomento local.`,
+    recommendations: [
+      "Expandir a infraestrutura de conectividade no parque para suportar mais demonstrações de IoT e agricultura de precisão.",
+      "Criar rodadas de negócios segmentadas por cultura (Soja, Café, Pecuária) para otimizar o tempo dos produtores e aumentar o ticket médio.",
+      "Implementar um sistema de pré-credenciamento digital para capturar dados mais detalhados sobre o perfil de compra dos visitantes antes do evento."
+    ]
+  };
 };
