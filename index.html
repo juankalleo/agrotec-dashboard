@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AGROTEC - SEMAGRIC</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <style>
+      body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background-color: #f8fafc;
+        background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+        background-size: 24px 24px;
+      }
+      
+      /* PDF Generation Styles */
+      .pdf-mode {
+        background-color: white !important;
+        background-image: none !important;
+        padding: 40px !important;
+        width: 100% !important;
+      }
+      
+      .pdf-mode .no-print {
+        display: none !important;
+      }
+      
+      .pdf-mode .print-only {
+        display: block !important;
+      }
+      
+      .pdf-mode .card {
+        box-shadow: none !important;
+        border: 1px solid #e5e7eb !important;
+        break-inside: avoid;
+      }
+
+      /* Print styles for fallback */
+      @media print {
+        .no-print {
+          display: none !important;
+        }
+        .print-only {
+          display: block !important;
+        }
+        body {
+          background-color: white;
+          background-image: none;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        .card {
+          box-shadow: none;
+          border: 1px solid #ddd;
+          break-inside: avoid;
+        }
+      }
+      
+      /* Custom Scrollbar */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.30.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.555.0",
+    "recharts": "https://aistudiocdn.com/recharts@^3.5.1"
+  }
+}
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
