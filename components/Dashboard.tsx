@@ -67,6 +67,15 @@ export const Dashboard: React.FC<DashboardProps> = ({ exhibitors }) => {
   const projVisitors = Math.round(totalVisitors * 1.15);
   const projExhibitors = Math.round(totalExhibitors * 1.10);
 
+  // Helper para ajustar tamanho da fonte baseado no tamanho do valor
+  const getProjectionFontSize = (value: string) => {
+    const length = value.length;
+    if (length <= 10) return 'text-3xl lg:text-4xl';
+    if (length <= 15) return 'text-2xl lg:text-3xl';
+    if (length <= 20) return 'text-xl lg:text-2xl';
+    return 'text-lg lg:text-xl';
+  };
+
   const downloadPDF = () => {
     setIsPdfMode(true);
     
@@ -572,7 +581,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ exhibitors }) => {
                 </span>
               </div>
               <p className="text-emerald-100/60 text-sm font-medium uppercase tracking-wider mb-1">Volume Projetado</p>
-              <h4 className="text-3xl lg:text-4xl font-bold text-white tracking-tight">{formatBRL(projVolume)}</h4>
+              <h4 className={`${getProjectionFontSize(formatBRL(projVolume))} font-bold text-white tracking-tight break-words`}>{formatBRL(projVolume)}</h4>
               <p className="text-xs text-emerald-200/40 mt-3 font-light">Meta de crescimento financeiro</p>
             </div>
 
@@ -586,7 +595,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ exhibitors }) => {
                 </span>
               </div>
               <p className="text-blue-100/60 text-sm font-medium uppercase tracking-wider mb-1">Público Esperado</p>
-              <h4 className="text-3xl lg:text-4xl font-bold text-white tracking-tight">{projVisitors.toLocaleString('pt-BR')}</h4>
+              <h4 className={`${getProjectionFontSize(projVisitors.toLocaleString('pt-BR'))} font-bold text-white tracking-tight break-words`}>{projVisitors.toLocaleString('pt-BR')}</h4>
               <p className="text-xs text-blue-200/40 mt-3 font-light">Estimativa de fluxo de visitantes</p>
             </div>
 
@@ -600,7 +609,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ exhibitors }) => {
                 </span>
               </div>
               <p className="text-purple-100/60 text-sm font-medium uppercase tracking-wider mb-1">Novos Expositores</p>
-              <h4 className="text-3xl lg:text-4xl font-bold text-white tracking-tight">{projExhibitors}</h4>
+              <h4 className={`${getProjectionFontSize(projExhibitors.toString())} font-bold text-white tracking-tight break-words`}>{projExhibitors}</h4>
               <p className="text-xs text-purple-200/40 mt-3 font-light">Expansão da área de feira</p>
             </div>
           </div>
