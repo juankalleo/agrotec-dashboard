@@ -54,9 +54,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ exhibitors }) => {
     .sort((a, b) => b.value - a.value)
     .slice(0, 5); // Top 5 cities
 
-  // Data for Type Chart
+  // Data for Type Chart (by business volume)
   const typeDataMap = exhibitors.reduce((acc, curr) => {
-    acc[curr.type] = (acc[curr.type] || 0) + 1;
+    acc[curr.type] = (acc[curr.type] || 0) + curr.businessVolume;
     return acc;
   }, {} as Record<string, number>);
 
@@ -520,7 +520,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ exhibitors }) => {
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 card break-inside-avoid">
            <div className="mb-6">
                 <h3 className="text-lg font-bold text-slate-800">Distribuição por Categoria</h3>
-                <p className="text-xs text-slate-400">Perfil dos expositores participantes</p>
+                <p className="text-xs text-slate-400">Volume de negócios por perfil de expositor</p>
             </div>
           <div className="h-72 w-full">
             <ResponsiveContainer width="100%" height="100%">
@@ -540,8 +540,17 @@ export const Dashboard: React.FC<DashboardProps> = ({ exhibitors }) => {
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
-                <RechartsTooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}/>
-                <Legend verticalAlign="bottom" height={36} iconType="circle" wrapperStyle={{paddingTop: '20px'}} />
+                <RechartsTooltip 
+                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                  formatter={(value: number) => formatBRL(value)}
+                />
+                <Legend 
+                  verticalAlign="bottom" 
+                  height={36} 
+                  iconType="circle" 
+                  wrapperStyle={{paddingTop: '20px'}}
+                  formatter={(value, entry: any) => `${value}: ${formatBRL(entry.payload.value)}`}
+                />
               </PieChart>
             </ResponsiveContainer>
           </div>
