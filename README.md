@@ -5,28 +5,69 @@
 # AGROTEC Dashboard - Portal de Gestão 2025
 
 <div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+  
+![AGROTEC 2025](https://img.shields.io/badge/AGROTEC-2025-059669?style=for-the-badge)
+![React](https://img.shields.io/badge/React-19.2.1-61DAFB?style=for-the-badge&logo=react)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.6-3178C6?style=for-the-badge&logo=typescript)
+![Supabase](https://img.shields.io/badge/Supabase-Cloud-3ECF8E?style=for-the-badge&logo=supabase)
+![Vercel](https://img.shields.io/badge/Deploy-Vercel-000000?style=for-the-badge&logo=vercel)
+
 </div>
 
-Portal moderno para gestão da Feira de Agronegócio e Tecnologia de Porto Velho (SEMAGRIC). Dashboard inteligente com dados sincronizados em nuvem.
+Portal moderno e inteligente para gestão da Feira de Agronegócio e Tecnologia de Porto Velho (SEMAGRIC). Dashboard executivo com dados sincronizados em nuvem, análise IA e exportação de relatórios profissionais.
 
-## 🚀 Características
+## ✨ Características Principais
 
-- ✅ Dashboard executivo com gráficos
-- ✅ Gerenciamento de expositores
-- ✅ Galeria de fotos
-- ✅ **Dados salvos em banco de dados Supabase (nuvem)**
-- ✅ Sincronização em múltiplos dispositivos
-- ✅ Relatórios em PDF
-- ✅ Interface responsiva (mobile e desktop)
+- 📊 **Dashboard Executivo** - Gráficos e KPIs em tempo real
+- 👥 **Gerenciamento de Expositores** - Cadastro completo com validação
+- 🖼️ **Galeria de Fotos** - Upload e organização de imagens
+- ☁️ **Banco de Dados Supabase** - Dados persistentes na nuvem
+- 🔄 **Sincronização Automática** - Acesse de qualquer dispositivo
+- 📄 **Relatórios PDF** - Exportação profissional formatada
+- 🤖 **Análise IA** - Insights gerados por Google Gemini
+- 📱 **Interface Responsiva** - Funciona em mobile e desktop
+- 🎯 **Projeções 2026** - Previsões baseadas em dados
 
-## 🛠️ Pré-requisitos
+## 🚀 Deploy Rápido na Vercel
 
-- Node.js 18+
+### Opção 1: Deploy Automático (Recomendado)
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/SEU-USUARIO/agrotec-dashboard)
+
+### Opção 2: Deploy Manual
+
+```powershell
+# 1. Executar script de setup
+.\deploy-setup.ps1
+
+# 2. Seguir instruções exibidas
+# 3. Criar repositório no GitHub
+# 4. Conectar na Vercel
+```
+
+📖 **Guia Completo:** [DEPLOY_VERCEL.md](DEPLOY_VERCEL.md)
+
+## 🛠️ Tecnologias
+
+- **Frontend:** React 19.2.1 + TypeScript 5.6
+- **Build:** Vite 6.4.1
+- **Estilo:** Tailwind CSS
+- **Gráficos:** Recharts
+- **Banco de Dados:** Supabase PostgreSQL
+- **IA:** Google Gemini API
+- **PDF:** html2pdf.js
+- **Deploy:** Vercel
+
+## 📋 Pré-requisitos
+
+- Node.js 18+ ([Download](https://nodejs.org))
 - npm ou yarn
-- Conta Supabase (gratuita em https://supabase.com)
+- Conta Supabase ([Criar grátis](https://supabase.com))
+- (Opcional) Conta Google Cloud para IA
 
-## 📋 Quick Start
+## � Instalação Local
+
+### 1. Clonar Repositório
 
 ### 1. Clonar e Instalar
 ```bash
