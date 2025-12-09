@@ -5,53 +5,72 @@ import { ExhibitorList } from './components/ExhibitorList';
 import { ExhibitorForm } from './components/ExhibitorForm';
 import { Gallery } from './components/Gallery';
 import { Exhibitor, ExhibitorType, GalleryPhoto } from './types';
+import { fetchExhibitors, addExhibitor, updateExhibitor, deleteExhibitor, fetchPhotos, addPhoto, deletePhoto } from './services/supabaseService';
 
 function App() {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'exhibitors' | 'gallery'>('dashboard');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   
-  // States with LocalStorage Persistence - Starts empty for production
-  const [exhibitors, setExhibitors] = useState<Exhibitor[]>(() => {
-    const saved = localStorage.getItem('agrotec_exhibitors');
-    return saved ? JSON.parse(saved) : [];
-  });
-
-  const [photos, setPhotos] = useState<GalleryPhoto[]>(() => {
-    const saved = localStorage.getItem('agrotec_photos');
-    return saved ? JSON.parse(saved) : [];
-  });
+  // States with Database Persistence via Supabase
+  const [exhibitors, setExhibitors] = useState<Exhibitor[]>([]);
+  const [photos, setPhotos] = useState<GalleryPhoto[]>([]);
 
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingExhibitor, setEditingExhibitor] = useState<Exhibitor | undefined>(undefined);
 
-  // Persistence Effects
+  // Load data from Supabase on component mount
   useEffect(() => {
-    localStorage.setItem('agrotec_exhibitors', JSON.stringify(exhibitors));
-  }, [exhibitors]);
+    const loadData = async () => {
+      setIsLoading(true);
+      try {
+        const [exhibitorsData, photosData] = await Promise.all([
+          fetchExhibitors(),
+          fetchPhotos()
+        ]);
+        setExhibitors(exhibitorsData);
+        setPhotos(photosData);
+      } catch (err) {
+        console.error('Erro ao carregar dados:', err);
+        // Fallback para localStorage se Supabase não estiver disponível
+        const saved = localStorage.getItem('agrotec_exhibitors');
+        if (saved) setExhibitors(JSON.parse(saved));
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  useEffect(() => {
-    localStorage.setItem('agrotec_photos', JSON.stringify(photos));
-  }, [photos]);
+    loadData();
+  }, []);
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   // Exhibitor Actions
-  const handleAddExhibitor = (newExhibitorData: Omit<Exhibitor, 'id'>) => {
-    if (editingExhibitor) {
-      setExhibitors(exhibitors.map(ex => ex.id === editingExhibitor.id ? { ...newExhibitorData, id: ex.id } : ex));
-    } else {
-      const newExhibitor: Exhibitor = {
-        ...newExhibitorData,
-        id: Math.random().toString(36).substr(2, 9),
-      };
-      setExhibitors([...exhibitors, newExhibitor]);
+  const handleAddExhibitor = async (newExhibitorData: Omit<Exhibitor, 'id'>) => {
+    try {
+      if (editingExhibitor) {
+        await updateExhibitor(editingExhibitor.id, newExhibitorData);
+        setExhibitors(exhibitors.map(ex => ex.id === editingExhibitor.id ? { ...newExhibitorData, id: ex.id } : ex));
+      } else {
+        const newExhibitor = await addExhibitor(newExhibitorData);
+        setExhibitors([...exhibitors, newExhibitor]);
+      }
+      setEditingExhibitor(undefined);
+    } catch (err) {
+      console.error('Erro ao salvar expositor:', err);
+      alert('Erro ao salvar dados. Verifique sua conexão com internet.');
     }
-    setEditingExhibitor(undefined);
   };
 
-  const deleteExhibitor = (id: string) => {
+  const handleDeleteExhibitor = async (id: string) => {
     if (confirm('Tem certeza que deseja remover este expositor?')) {
-      setExhibitors(exhibitors.filter(ex => ex.id !== id));
+      try {
+        await deleteExhibitor(id);
+        setExhibitors(exhibitors.filter(ex => ex.id !== id));
+      } catch (err) {
+        console.error('Erro ao deletar expositor:', err);
+        alert('Erro ao deletar expositor.');
+      }
     }
   };
 
@@ -66,13 +85,25 @@ function App() {
   };
 
   // Gallery Actions
-  const handleAddPhoto = (photo: GalleryPhoto) => {
-    setPhotos([photo, ...photos]);
+  const handleAddPhoto = async (photo: GalleryPhoto) => {
+    try {
+      const newPhoto = await addPhoto(photo);
+      setPhotos([newPhoto, ...photos]);
+    } catch (err) {
+      console.error('Erro ao adicionar foto:', err);
+      alert('Erro ao salvar foto. Verifique sua conexão com internet.');
+    }
   };
 
-  const handleDeletePhoto = (id: string) => {
+  const handleDeletePhoto = async (id: string) => {
     if (confirm('Deseja excluir esta foto?')) {
-      setPhotos(photos.filter(p => p.id !== id));
+      try {
+        await deletePhoto(id);
+        setPhotos(photos.filter(p => p.id !== id));
+      } catch (err) {
+        console.error('Erro ao deletar foto:', err);
+        alert('Erro ao deletar foto.');
+      }
     }
   };
 
@@ -196,7 +227,7 @@ function App() {
           {activeTab === 'exhibitors' && (
             <ExhibitorList 
               exhibitors={exhibitors} 
-              onDelete={deleteExhibitor}
+              onDelete={handleDeleteExhibitor}
               onEdit={startEdit}
               onAdd={openNewForm}
             />

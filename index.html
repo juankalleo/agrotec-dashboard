@@ -15,46 +15,27 @@
         background-size: 24px 24px;
       }
       
-      /* PDF Generation Styles */
-      .pdf-mode {
-        background-color: white !important;
-        background-image: none !important;
-        padding: 40px !important;
-        width: 100% !important;
+      /* PDF Container - Hidden by default */
+      .pdf-container {
+        position: fixed;
+        left: -9999px;
+        top: 0;
       }
       
-      .pdf-mode .no-print {
-        display: none !important;
+      .pdf-container * {
+        box-sizing: border-box;
       }
       
-      .pdf-mode .print-only {
-        display: block !important;
-      }
-      
-      .pdf-mode .card {
-        box-shadow: none !important;
-        border: 1px solid #e5e7eb !important;
+      .pdf-container .no-break {
+        page-break-inside: avoid;
         break-inside: avoid;
       }
-
-      /* Print styles for fallback */
+      
+      /* Print styles */
       @media print {
-        .no-print {
-          display: none !important;
-        }
-        .print-only {
-          display: block !important;
-        }
         body {
           background-color: white;
           background-image: none;
-          -webkit-print-color-adjust: exact;
-          print-color-adjust: exact;
-        }
-        .card {
-          box-shadow: none;
-          border: 1px solid #ddd;
-          break-inside: avoid;
         }
       }
       

@@ -70,29 +70,77 @@ export const Dashboard: React.FC<DashboardProps> = ({ exhibitors }) => {
   const downloadPDF = () => {
     setIsPdfMode(true);
     
-    // Allow state to update and DOM to render before capturing
-    setTimeout(() => {
-      const element = document.getElementById('dashboard-content');
-      const opt = {
-        margin: [10, 10, 10, 10],
-        filename: `Relatorio_AGROTEC_${new Date().toISOString().split('T')[0]}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, logging: false },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-      };
+    // Aguarda renderização completa
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        const element = document.getElementById('pdf-content');
+        
+        if (!element) {
+          console.error("Elemento #pdf-content não encontrado");
+          alert("❌ Erro: Elemento PDF não encontrado");
+          setIsPdfMode(false);
+          return;
+        }
 
-      if (window.html2pdf) {
-        window.html2pdf().set(opt).from(element).save().then(() => {
+        console.log("Elemento encontrado:", element);
+        console.log("Dimensões:", element.offsetWidth, "x", element.offsetHeight);
+        console.log("ScrollHeight:", element.scrollHeight);
+
+        // Configuração otimizada para capturar todo o conteúdo
+        const opt = {
+          margin: 0,
+          filename: `Relatorio_AGROTEC_${new Date().toISOString().split('T')[0]}.pdf`,
+          image: { type: 'jpeg', quality: 0.95 },
+          html2canvas: { 
+            scale: 1,
+            useCORS: true,
+            allowTaint: true,
+            logging: true,
+            backgroundColor: '#ffffff',
+            width: 794,
+            height: element.scrollHeight,
+            windowWidth: 794,
+            windowHeight: element.scrollHeight,
+            x: 0,
+            y: 0,
+            scrollY: 0,
+            scrollX: 0,
+          },
+          jsPDF: { 
+            unit: 'px', 
+            format: [794, element.scrollHeight], 
+            orientation: 'portrait',
+            hotfixes: ['px_scaling']
+          },
+          pagebreak: { 
+            mode: ['avoid-all'],
+            avoid: '.no-break'
+          }
+        };
+
+        if (window.html2pdf) {
+          console.log("Iniciando geração do PDF...");
+          window.html2pdf()
+            .set(opt)
+            .from(element)
+            .save()
+            .then(() => {
+              console.log("PDF gerado com sucesso!");
+              setIsPdfMode(false);
+              alert('✅ Relatório exportado com sucesso!');
+            })
+            .catch((err: any) => {
+              console.error("Erro completo ao gerar PDF:", err);
+              alert("❌ Erro ao gerar PDF. Veja o console (F12) para detalhes.");
+              setIsPdfMode(false);
+            });
+        } else {
+          console.error("html2pdf não está definido");
+          alert("❌ Biblioteca PDF não carregada. Recarregue a página (F5).");
           setIsPdfMode(false);
-        }).catch((err: any) => {
-          console.error("PDF generation failed", err);
-          setIsPdfMode(false);
-        });
-      } else {
-        alert("Biblioteca PDF carregando... tente novamente em instantes.");
-        setIsPdfMode(false);
-      }
-    }, 500);
+        }
+      }, 2000);
+    });
   };
 
   const handleGenerateReport = async () => {
@@ -113,27 +161,223 @@ export const Dashboard: React.FC<DashboardProps> = ({ exhibitors }) => {
   };
 
   return (
+    <>
+    {/* OVERLAY - Esconde conteúdo da web durante geração */}
+    {isPdfMode && (
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        zIndex: 8888,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: '18px',
+        fontWeight: 'bold',
+        color: '#059669'
+      }}>
+        📄 Gerando PDF... Aguarde
+      </div>
+    )}
+
+    {/* PDF CONTENT - Renderizado quando isPdfMode = true */}
+    {isPdfMode && (
+      <div id="pdf-content" style={{ 
+        position: 'fixed',
+        top: '0',
+        left: '0',
+        width: '794px',
+        minHeight: '100vh',
+        backgroundColor: '#ffffff',
+        padding: '30px 40px',
+        fontFamily: 'Arial, sans-serif',
+        zIndex: 9999,
+        boxSizing: 'border-box',
+        overflow: 'visible'
+      }}>
+        {/* PDF Header */}
+        <div style={{ marginBottom: '20px', paddingBottom: '15px', borderBottom: '3px solid #059669' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div>
+              <h1 style={{ fontSize: '32px', fontWeight: 'bold', color: '#111827', margin: '0 0 5px 0' }}>
+                AGROTEC 2025
+              </h1>
+              <p style={{ fontSize: '14px', color: '#059669', fontWeight: '600', margin: 0 }}>
+                SEMAGRIC - Secretaria de Agricultura
+              </p>
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <p style={{ fontSize: '13px', fontWeight: '600', color: '#374151', margin: '0 0 3px 0' }}>
+                Relatório Executivo
+              </p>
+              <p style={{ fontSize: '12px', color: '#6b7280', margin: 0 }}>
+                {new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}
+              </p>
+            </div>
+          </div>
+          <div style={{ marginTop: '10px', padding: '8px 12px', backgroundColor: '#d1fae5', borderLeft: '4px solid #059669', fontSize: '12px', color: '#065f46' }}>
+            📊 Relatório confidencial para gestão interna • 27-29 de Novembro de 2025
+          </div>
+        </div>
+
+        {/* AI Report */}
+        {aiReport && (
+          <div className="no-break" style={{ marginBottom: '20px', padding: '15px', backgroundColor: '#faf5ff', border: '2px solid #e9d5ff', borderRadius: '8px' }}>
+            <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: '#581c87', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              ✨ Análise Inteligente SEMAGRIC
+            </h3>
+            <p style={{ fontSize: '13px', color: '#1f2937', lineHeight: '1.6', marginBottom: '12px' }}>
+              {aiReport.summary}
+            </p>
+            <div style={{ padding: '12px', backgroundColor: '#ffffff', border: '1px solid #e9d5ff', borderRadius: '6px' }}>
+              <h4 style={{ fontSize: '13px', fontWeight: 'bold', color: '#6b21a8', marginBottom: '8px' }}>
+                🎯 Recomendações Estratégicas
+              </h4>
+              <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '12px', color: '#4b5563', lineHeight: '1.8' }}>
+                {aiReport.recommendations.map((rec, idx) => (
+                  <li key={idx} style={{ marginBottom: '4px' }}>{rec}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )}
+
+        {/* KPIs */}
+        <div className="no-break" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px' }}>
+          <div style={{ padding: '12px', backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '8px' }}>
+            <p style={{ fontSize: '11px', color: '#166534', fontWeight: '600', margin: '0 0 4px 0', textTransform: 'uppercase' }}>💰 Volume de Negócios</p>
+            <p style={{ fontSize: '20px', fontWeight: 'bold', color: '#052e16', margin: 0 }}>{formatBRL(totalVolume)}</p>
+          </div>
+          <div style={{ padding: '12px', backgroundColor: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '8px' }}>
+            <p style={{ fontSize: '11px', color: '#1e40af', fontWeight: '600', margin: '0 0 4px 0', textTransform: 'uppercase' }}>👥 Total Visitantes</p>
+            <p style={{ fontSize: '20px', fontWeight: 'bold', color: '#1e3a8a', margin: 0 }}>{totalVisitors.toLocaleString('pt-BR')}</p>
+          </div>
+          <div style={{ padding: '12px', backgroundColor: '#fef3c7', border: '1px solid #fde68a', borderRadius: '8px' }}>
+            <p style={{ fontSize: '11px', color: '#92400e', fontWeight: '600', margin: '0 0 4px 0', textTransform: 'uppercase' }}>🏪 Expositores</p>
+            <p style={{ fontSize: '20px', fontWeight: 'bold', color: '#78350f', margin: 0 }}>{exhibitors.length}</p>
+          </div>
+          <div style={{ padding: '12px', backgroundColor: '#fce7f3', border: '1px solid #fbcfe8', borderRadius: '8px' }}>
+            <p style={{ fontSize: '11px', color: '#9f1239', fontWeight: '600', margin: '0 0 4px 0', textTransform: 'uppercase' }}>📊 Ticket Médio</p>
+            <p style={{ fontSize: '20px', fontWeight: 'bold', color: '#881337', margin: 0 }}>
+              {formatBRL(exhibitors.length ? totalVolume / exhibitors.length : 0)}
+            </p>
+          </div>
+        </div>
+
+        {/* Projections */}
+        <div className="no-break" style={{ marginBottom: '20px', padding: '15px', backgroundColor: '#1e293b', borderRadius: '8px', color: '#ffffff' }}>
+          <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '12px', color: '#ffffff' }}>
+            🎯 Projeções 2026
+          </h3>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
+            <div style={{ padding: '10px', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: '6px' }}>
+              <p style={{ fontSize: '10px', color: '#94a3b8', margin: '0 0 4px 0' }}>VOLUME PROJETADO</p>
+              <p style={{ fontSize: '16px', fontWeight: 'bold', margin: 0 }}>{formatBRL(projVolume)}</p>
+            </div>
+            <div style={{ padding: '10px', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: '6px' }}>
+              <p style={{ fontSize: '10px', color: '#94a3b8', margin: '0 0 4px 0' }}>PÚBLICO ESPERADO</p>
+              <p style={{ fontSize: '16px', fontWeight: 'bold', margin: 0 }}>{projVisitors.toLocaleString('pt-BR')}</p>
+            </div>
+            <div style={{ padding: '10px', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: '6px' }}>
+              <p style={{ fontSize: '10px', color: '#94a3b8', margin: '0 0 4px 0' }}>NOVOS EXPOSITORES</p>
+              <p style={{ fontSize: '16px', fontWeight: 'bold', margin: 0 }}>{projExhibitors}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Table */}
+        <div className="no-break" style={{ marginTop: '20px' }}>
+          <h3 style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '10px', color: '#111827', paddingLeft: '10px', borderLeft: '4px solid #059669' }}>
+            Detalhamento dos Expositores
+          </h3>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '10px', backgroundColor: '#ffffff', border: '1px solid #e5e7eb', tableLayout: 'fixed' }}>
+            <colgroup>
+              <col style={{ width: '25%' }} />
+              <col style={{ width: '18%' }} />
+              <col style={{ width: '18%' }} />
+              <col style={{ width: '20%' }} />
+              <col style={{ width: '19%' }} />
+            </colgroup>
+            <thead>
+              <tr style={{ backgroundColor: '#d1fae5', color: '#065f46' }}>
+                <th style={{ padding: '8px 6px', textAlign: 'left', fontWeight: '600', borderBottom: '2px solid #059669', fontSize: '10px' }}>Nome</th>
+                <th style={{ padding: '8px 6px', textAlign: 'left', fontWeight: '600', borderBottom: '2px solid #059669', fontSize: '10px' }}>Categoria</th>
+                <th style={{ padding: '8px 6px', textAlign: 'left', fontWeight: '600', borderBottom: '2px solid #059669', fontSize: '10px' }}>Cidade</th>
+                <th style={{ padding: '8px 6px', textAlign: 'right', fontWeight: '600', borderBottom: '2px solid #059669', fontSize: '10px' }}>Volume</th>
+                <th style={{ padding: '8px 6px', textAlign: 'right', fontWeight: '600', borderBottom: '2px solid #059669', fontSize: '10px' }}>Visitantes</th>
+              </tr>
+            </thead>
+            <tbody>
+              {exhibitors.map((ex, idx) => (
+                <tr key={ex.id} style={{ backgroundColor: idx % 2 === 0 ? '#ffffff' : '#f9fafb', pageBreakInside: 'avoid' }}>
+                  <td style={{ padding: '6px', borderBottom: '1px solid #f3f4f6', color: '#1f2937', fontWeight: '500', fontSize: '10px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ex.name}</td>
+                  <td style={{ padding: '6px', borderBottom: '1px solid #f3f4f6', color: '#059669', fontSize: '9px' }}>{ex.type}</td>
+                  <td style={{ padding: '6px', borderBottom: '1px solid #f3f4f6', color: '#6b7280', fontSize: '10px' }}>{ex.city}</td>
+                  <td style={{ padding: '6px', borderBottom: '1px solid #f3f4f6', textAlign: 'right', fontFamily: 'monospace', fontWeight: '600', color: '#111827', fontSize: '10px' }}>
+                    {formatBRL(ex.businessVolume)}
+                  </td>
+                  <td style={{ padding: '6px', borderBottom: '1px solid #f3f4f6', textAlign: 'right', color: '#374151', fontSize: '10px' }}>
+                    {ex.visitors.toLocaleString('pt-BR')}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot>
+              <tr style={{ backgroundColor: '#d1fae5', fontWeight: 'bold', color: '#065f46' }}>
+                <td colSpan={3} style={{ padding: '10px 6px', borderTop: '2px solid #059669', fontSize: '10px' }}>TOTAIS</td>
+                <td style={{ padding: '10px 6px', textAlign: 'right', fontFamily: 'monospace', borderTop: '2px solid #059669', fontSize: '10px' }}>
+                  {formatBRL(totalVolume)}
+                </td>
+                <td style={{ padding: '10px 6px', textAlign: 'right', borderTop: '2px solid #059669', fontSize: '10px' }}>
+                  {totalVisitors.toLocaleString('pt-BR')}
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        {/* Signature */}
+        <div style={{ marginTop: '40px', paddingTop: '20px', borderTop: '2px solid #e5e7eb', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ width: '200px', borderBottom: '2px solid #6b7280', marginBottom: '5px' }}></div>
+            <p style={{ fontSize: '13px', fontWeight: 'bold', color: '#111827', margin: '0 0 2px 0' }}>Rodrigo</p>
+            <p style={{ fontSize: '10px', color: '#6b7280', margin: 0 }}>Secretário SEMAGRIC</p>
+          </div>
+          <div style={{ textAlign: 'right', fontSize: '10px', color: '#9ca3af' }}>
+            <p style={{ margin: '0 0 2px 0' }}>Documento gerado via AGROTEC Portal</p>
+            <p style={{ margin: 0, fontFamily: 'monospace' }}>ID: {Math.random().toString(36).substr(2, 9).toUpperCase()}</p>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {/* MAIN DASHBOARD - Web View */}
     <div 
       id="dashboard-content" 
-      className={`space-y-8 transition-all duration-300 ${isPdfMode ? 'pdf-mode' : 'pb-10'}`}
+      className="space-y-8 pb-10"
     >
       {/* PDF Header - Visible only in Print/PDF Mode */}
-      <div className="hidden print-only mb-6 border-b-2 border-emerald-800 pb-4">
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-3">
-             <Sprout className="w-10 h-10 text-emerald-700" />
+      <div className="hidden print-only mb-8 border-b-2 border-emerald-700 pb-6 break-inside-avoid">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-4">
+             <div className="bg-emerald-100 p-3 rounded-lg">
+               <Sprout className="w-12 h-12 text-emerald-700" />
+             </div>
              <div>
-               <h1 className="text-2xl font-bold text-gray-900">AGROTEC 2025</h1>
-               <p className="text-emerald-700 font-semibold text-sm">SEMAGRIC - Secretaria de Agricultura</p>
+               <h1 className="text-3xl font-bold text-gray-900 mb-1">AGROTEC 2025</h1>
+               <p className="text-emerald-700 font-semibold text-base">SEMAGRIC - Secretaria de Agricultura</p>
              </div>
           </div>
           <div className="text-right">
-            <p className="text-sm text-gray-500">Relatório Executivo</p>
-            <p className="text-xs text-gray-400">Gerado em {new Date().toLocaleDateString()}</p>
+            <p className="text-base font-semibold text-gray-700 mb-1">Relatório Executivo</p>
+            <p className="text-sm text-gray-500">Gerado em {new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
           </div>
         </div>
-        <div className="bg-emerald-50 p-2 rounded text-center text-xs text-emerald-800 font-medium">
-          Relatório confidencial para gestão interna
+        <div className="bg-emerald-50 border-l-4 border-emerald-600 p-3 rounded text-sm text-emerald-900 font-medium">
+          📊 Relatório confidencial para gestão interna • 27-29 de Novembro de 2025
         </div>
       </div>
 
@@ -178,25 +422,28 @@ export const Dashboard: React.FC<DashboardProps> = ({ exhibitors }) => {
 
       {/* AI Insight Section */}
       {aiReport && (
-        <div className="bg-white border border-purple-100 rounded-2xl shadow-sm p-6 mb-6 overflow-hidden relative">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-purple-50 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+        <div className="bg-gradient-to-br from-purple-50 to-white border-2 border-purple-200 rounded-2xl shadow-sm p-6 mb-6 overflow-hidden relative break-inside-avoid">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-purple-100 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 opacity-50"></div>
           <div className="relative z-10">
-            <div className="flex items-center gap-2 mb-4 text-purple-700">
-                <div className="bg-purple-100 p-2 rounded-lg">
-                    <Sparkles className="w-5 h-5" />
+            <div className="flex items-center gap-3 mb-4 pb-3 border-b-2 border-purple-100">
+                <div className="bg-purple-600 p-2.5 rounded-lg shadow-md">
+                    <Sparkles className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="font-bold text-lg">Análise Inteligente SEMAGRIC</h3>
+                <div>
+                  <h3 className="font-bold text-xl text-purple-900">Análise Inteligente SEMAGRIC</h3>
+                  <p className="text-xs text-purple-600">Gerada por IA baseada nos dados coletados</p>
+                </div>
             </div>
-            <p className="text-slate-700 mb-6 leading-relaxed text-lg font-light">{aiReport.summary}</p>
-            <div className="bg-purple-50/50 rounded-xl p-5 border border-purple-100">
-                <h4 className="font-semibold text-purple-900 mb-3 flex items-center gap-2">
-                    <Target className="w-4 h-4" /> Recomendações Estratégicas
+            <p className="text-gray-800 mb-6 leading-relaxed text-base">{aiReport.summary}</p>
+            <div className="bg-white rounded-xl p-5 border-2 border-purple-100 shadow-sm">
+                <h4 className="font-bold text-purple-900 mb-4 flex items-center gap-2 text-base">
+                    <Target className="w-5 h-5" /> Recomendações Estratégicas
                 </h4>
-                <ul className="grid md:grid-cols-3 gap-4">
+                <ul className="grid md:grid-cols-3 gap-3">
                 {aiReport.recommendations.map((rec, idx) => (
-                    <li key={idx} className="bg-white p-3 rounded-lg shadow-sm text-sm text-slate-600 border border-purple-100 flex items-start gap-2">
-                        <span className="bg-purple-200 text-purple-800 w-5 h-5 flex items-center justify-center rounded-full text-xs font-bold shrink-0">{idx + 1}</span>
-                        {rec}
+                    <li key={idx} className="bg-purple-50 p-3 rounded-lg shadow-sm text-sm text-gray-700 border border-purple-200 flex items-start gap-2">
+                        <span className="bg-purple-600 text-white w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold shrink-0">{idx + 1}</span>
+                        <span className="pt-0.5">{rec}</span>
                     </li>
                 ))}
                 </ul>
@@ -361,55 +608,58 @@ export const Dashboard: React.FC<DashboardProps> = ({ exhibitors }) => {
       </div>
 
       {/* Table for Print/PDF View Only */}
-      <div className={`mt-8 ${isPdfMode ? 'block' : 'hidden print-only'}`}>
+      <div className={`mt-8 ${isPdfMode ? 'block' : 'hidden print-only'} break-inside-avoid`}>
         <h3 className="text-lg font-bold mb-4 text-gray-800 border-l-4 border-emerald-500 pl-3">Detalhamento dos Expositores</h3>
-        <table className="w-full text-sm text-left border-collapse bg-white rounded-lg border border-gray-200">
-          <thead>
-            <tr className="bg-emerald-50 text-emerald-900 border-b-2 border-emerald-100">
-              <th className="py-3 px-4 font-semibold">Nome</th>
-              <th className="py-3 px-4 font-semibold">Categoria</th>
-              <th className="py-3 px-4 font-semibold">Cidade</th>
-              <th className="py-3 px-4 font-semibold text-right">Volume (R$)</th>
-              <th className="py-3 px-4 font-semibold text-right">Visitantes</th>
-            </tr>
-          </thead>
-          <tbody>
-            {exhibitors.map((ex, index) => (
-              <tr key={ex.id} className={`border-b border-gray-100 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
-                <td className="py-3 px-4">{ex.name}</td>
-                <td className="py-3 px-4">
-                    <span className="bg-white border border-gray-200 px-2 py-0.5 rounded text-xs font-medium text-gray-600">
-                        {ex.type}
-                    </span>
-                </td>
-                <td className="py-3 px-4">{ex.city}</td>
-                <td className="py-3 px-4 text-right font-mono">{formatBRL(ex.businessVolume)}</td>
-                <td className="py-3 px-4 text-right">{ex.visitors}</td>
+        <div className="overflow-hidden rounded-lg border border-gray-200">
+          <table className="w-full text-sm text-left border-collapse bg-white">
+            <thead>
+              <tr className="bg-emerald-50 text-emerald-900 border-b-2 border-emerald-200">
+                <th className="py-3 px-4 font-semibold">Nome</th>
+                <th className="py-3 px-4 font-semibold">Categoria</th>
+                <th className="py-3 px-4 font-semibold">Cidade</th>
+                <th className="py-3 px-4 font-semibold text-right">Volume (R$)</th>
+                <th className="py-3 px-4 font-semibold text-right">Visitantes</th>
               </tr>
-            ))}
-          </tbody>
-          <tfoot>
-            <tr className="bg-gray-100 font-bold text-gray-800">
-                <td className="py-3 px-4" colSpan={3}>TOTAIS</td>
-                <td className="py-3 px-4 text-right">{formatBRL(totalVolume)}</td>
-                <td className="py-3 px-4 text-right">{totalVisitors}</td>
-            </tr>
-          </tfoot>
-        </table>
+            </thead>
+            <tbody>
+              {exhibitors.map((ex, index) => (
+                <tr key={ex.id} className={`border-b border-gray-100 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+                  <td className="py-2.5 px-4 font-medium text-gray-800">{ex.name}</td>
+                  <td className="py-2.5 px-4">
+                      <span className="bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded text-xs font-medium text-emerald-700">
+                          {ex.type}
+                      </span>
+                  </td>
+                  <td className="py-2.5 px-4 text-gray-600">{ex.city}</td>
+                  <td className="py-2.5 px-4 text-right font-mono font-semibold text-gray-800">{formatBRL(ex.businessVolume)}</td>
+                  <td className="py-2.5 px-4 text-right text-gray-700">{ex.visitors.toLocaleString('pt-BR')}</td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot>
+              <tr className="bg-emerald-100 font-bold text-emerald-900 border-t-2 border-emerald-200">
+                  <td className="py-3 px-4" colSpan={3}>TOTAIS</td>
+                  <td className="py-3 px-4 text-right font-mono">{formatBRL(totalVolume)}</td>
+                  <td className="py-3 px-4 text-right">{totalVisitors.toLocaleString('pt-BR')}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
         
         {/* Signature Area */}
-        <div className="mt-16 pt-8 border-t border-gray-200 flex justify-between items-end break-inside-avoid">
+        <div className="mt-12 pt-6 border-t-2 border-gray-200 flex justify-between items-end break-inside-avoid">
              <div className="text-center">
-                 <div className="w-64 border-b border-gray-400 mb-2"></div>
-                 <p className="font-bold text-gray-800">Rodrigo</p>
-                 <p className="text-xs text-gray-500">Secretário SEMAGRIC</p>
+                 <div className="w-64 border-b-2 border-gray-400 mb-2"></div>
+                 <p className="font-bold text-gray-800 text-sm">Rodrigo</p>
+                 <p className="text-xs text-gray-500 mt-1">Secretário SEMAGRIC</p>
              </div>
              <div className="text-right text-xs text-gray-400">
-                 <p>Documento gerado via AGROTEC Portal</p>
-                 <p>ID: {Math.random().toString(36).substr(2, 9).toUpperCase()}</p>
+                 <p className="mb-1">Documento gerado via AGROTEC Portal</p>
+                 <p className="font-mono">ID: {Math.random().toString(36).substr(2, 9).toUpperCase()}</p>
              </div>
         </div>
       </div>
     </div>
+    </>
   );
 }
