@@ -14,7 +14,7 @@ export const generateExecutiveReport = async (
   const isHighPerformance = stats.totalVolume > 1000000;
 
   return {
-    summary: `A AGROTEC 2025 apresenta resultados expressivos, consolidando-se como o principal vetor de desenvolvimento tecnológico para o campo na região. ${isHighPerformance ? 'O volume de negócios superou as expectativas iniciais, demonstrando a força econômica do setor.' : 'Os indicadores apontam para um crescimento sustentável.'} A diversidade de expositores, unindo lojistas e produtores, criou um ambiente propício para networking qualificado e fechamento de contratos de longo prazo, validando as estratégias da SEMAGRIC para o fomento local.`,
+    summary: `A AGROTEC 2025 apresenta resultados expressivos, consolidando-se como o principal vetor de desenvolvimento tecnológico para o campo na região. ${isHighPerformance ? 'O volume de negócios superou as expectativas iniciais, demonstrando a força econômica do setor.' : 'Os indicadores apontam para um crescimento sustentável.'} A diversidade de expositores, reunindo representantes de vários setores do agronegócio, criou um ambiente propício para networking qualificado e fechamento de contratos de longo prazo, validando as estratégias da SEMAGRIC para o fomento local.`,
     recommendations: [
       "Expandir a infraestrutura de conectividade no parque para suportar mais demonstrações de IoT e agricultura de precisão.",
       "Criar rodadas de negócios segmentadas por cultura (Soja, Café, Pecuária) para otimizar o tempo dos produtores e aumentar o ticket médio.",

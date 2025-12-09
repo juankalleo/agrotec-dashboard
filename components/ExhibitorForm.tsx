@@ -12,7 +12,7 @@ interface ExhibitorFormProps {
 export const ExhibitorForm: React.FC<ExhibitorFormProps> = ({ isOpen, onClose, onSubmit, initialData }) => {
   const [formData, setFormData] = useState({
     name: '',
-    type: ExhibitorType.PRODUTOR_RURAL,
+    type: ExhibitorType.AGRICULTURA_FAMILIAR,
     products: '',
     city: 'Porto Velho',
     businessVolume: 0,
@@ -44,7 +44,7 @@ export const ExhibitorForm: React.FC<ExhibitorFormProps> = ({ isOpen, onClose, o
     } else {
       setFormData({
         name: '',
-        type: ExhibitorType.PRODUTOR_RURAL,
+        type: ExhibitorType.AGRICULTURA_FAMILIAR,
         products: '',
         city: 'Porto Velho',
         businessVolume: 0,

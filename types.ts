@@ -1,7 +1,17 @@
 export enum ExhibitorType {
-  LOJISTA = 'Lojista',
-  FEIRANTE = 'Feirante',
-  PRODUTOR_RURAL = 'Produtor Rural'
+  AGRICULTURA_FAMILIAR = 'Agricultura familiar',
+  AGROINDÚSTRIAS = 'Agroindústrias',
+  PSICULTURA = 'Psicultura',
+  MANDIOCULTURA = 'Mandiocultura',
+  APICULTURA = 'Apicultura',
+  CAFÉ = 'Café',
+  CARNE = 'Carne',
+  ARTESANATO = 'Artesanato',
+  EMPRESAS = 'Empresas',
+  BANCOS_TRADICIONAIS = 'Bancos tradicionais',
+  REPRESENTANTES_FINANCEIRAS = 'Representantes financeiras',
+  CONCESSIONÁRIAS_TRATORES = 'Concessionárias tratores',
+  CONCESSIONÁRIAS_VEÍCULOS = 'Concessionárias veículos'
 }
 
 export interface Exhibitor {

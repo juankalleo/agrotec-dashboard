@@ -408,7 +408,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ exhibitors }) => {
                     AGROTEC <span className="text-emerald-400">2025</span>
                  </h1>
                  <p className="text-emerald-50 text-lg md:text-xl font-light leading-relaxed drop-shadow-md border-l-4 border-emerald-500 pl-4">
-                    O maior encontro de produtores rurais, lojistas e tecnologia agrícola da região.
+                    Encontro de agricultura e empreendimentos dos setores primário e de suporte ao agronegócio da região.
                  </p>
             </div>
         </div>
@@ -609,7 +609,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ exhibitors }) => {
                 </span>
               </div>
               <p className="text-purple-100/60 text-sm font-medium uppercase tracking-wider mb-1">Novos Expositores</p>
-              <h4 className={`${getProjectionFontSize(projExhibitors.toString())} font-bold text-white tracking-tight break-words`}>{projExhibitors}</h4>
+              <h4 className="text-3xl lg:text-4xl font-bold text-white tracking-tight">{projExhibitors}</h4>
               <p className="text-xs text-purple-200/40 mt-3 font-light">Expansão da área de feira</p>
             </div>
           </div>
