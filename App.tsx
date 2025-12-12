@@ -123,20 +123,20 @@ function App() {
 
       {/* Sidebar */}
       <aside className={`
-        fixed md:sticky top-0 left-0 h-screen w-72 bg-emerald-950 text-white flex flex-col transition-all duration-300 z-20 shadow-2xl md:shadow-none no-print
+        fixed md:sticky top-0 left-0 h-screen w-72 bg-white text-slate-800 flex flex-col transition-all duration-300 z-20 shadow-2xl md:shadow-none no-print
         ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
       `}>
         {/* Sidebar Header */}
-        <div className="p-8 border-b border-emerald-900/50 bg-gradient-to-b from-emerald-900 to-emerald-950">
+        <div className="p-8 border-b border-slate-200 bg-white">
           <div className="flex items-center gap-4">
-            <div className="bg-emerald-500/20 p-2.5 rounded-xl border border-emerald-500/30 backdrop-blur-sm">
-              <Sprout className="w-8 h-8 text-emerald-400" />
+            <div className="bg-emerald-100 p-2.5 rounded-xl border border-emerald-300">
+              <Sprout className="w-8 h-8 text-emerald-700" />
             </div>
             <div>
-              <h1 className="font-bold text-2xl tracking-wide text-white">AGROTEC</h1>
+              <h1 className="font-bold text-2xl tracking-wide text-slate-800">AGROTEC</h1>
               <div className="flex items-center gap-1.5 mt-1">
-                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                <p className="text-xs text-emerald-300 font-medium tracking-wider">ONLINE SYSTEM</p>
+                <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
+                <p className="text-xs text-slate-600 font-medium tracking-wider">ONLINE SYSTEM</p>
               </div>
             </div>
           </div>
@@ -144,17 +144,17 @@ function App() {
 
         {/* Navigation */}
         <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
-          <div className="text-xs font-semibold text-emerald-600/80 uppercase tracking-wider mb-2 px-4 mt-4">Menu Principal</div>
+          <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 px-4 mt-4">Menu Principal</div>
           
           <button 
             onClick={() => { setActiveTab('dashboard'); setIsSidebarOpen(false); }}
             className={`w-full group flex items-center justify-between px-4 py-3.5 rounded-xl transition-all duration-200 border border-transparent
               ${activeTab === 'dashboard' 
                 ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-900/20 border-emerald-500/20' 
-                : 'text-emerald-300/80 hover:bg-emerald-900/50 hover:text-white hover:pl-5'}`}
+                : 'text-slate-600 hover:bg-slate-100 hover:text-slate-800 hover:pl-5'}`}
           >
             <div className="flex items-center gap-3">
-              <LayoutDashboard className={`w-5 h-5 ${activeTab === 'dashboard' ? 'text-white' : 'text-emerald-500 group-hover:text-emerald-400'}`} />
+              <LayoutDashboard className={`w-5 h-5 ${activeTab === 'dashboard' ? 'text-white' : 'text-emerald-600 group-hover:text-emerald-700'}`} />
               <span className="font-medium">Dashboard</span>
             </div>
             {activeTab === 'dashboard' && <ChevronRight className="w-4 h-4 opacity-70" />}
@@ -165,10 +165,10 @@ function App() {
             className={`w-full group flex items-center justify-between px-4 py-3.5 rounded-xl transition-all duration-200 border border-transparent
               ${activeTab === 'exhibitors' 
                 ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-900/20 border-emerald-500/20' 
-                : 'text-emerald-300/80 hover:bg-emerald-900/50 hover:text-white hover:pl-5'}`}
+                : 'text-slate-600 hover:bg-slate-100 hover:text-slate-800 hover:pl-5'}`}
           >
             <div className="flex items-center gap-3">
-              <Users className={`w-5 h-5 ${activeTab === 'exhibitors' ? 'text-white' : 'text-emerald-500 group-hover:text-emerald-400'}`} />
+              <Users className={`w-5 h-5 ${activeTab === 'exhibitors' ? 'text-white' : 'text-emerald-600 group-hover:text-emerald-700'}`} />
               <span className="font-medium">Expositores</span>
             </div>
             {activeTab === 'exhibitors' && <ChevronRight className="w-4 h-4 opacity-70" />}
@@ -179,10 +179,10 @@ function App() {
             className={`w-full group flex items-center justify-between px-4 py-3.5 rounded-xl transition-all duration-200 border border-transparent
               ${activeTab === 'gallery' 
                 ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-900/20 border-emerald-500/20' 
-                : 'text-emerald-300/80 hover:bg-emerald-900/50 hover:text-white hover:pl-5'}`}
+                : 'text-slate-600 hover:bg-slate-100 hover:text-slate-800 hover:pl-5'}`}
           >
             <div className="flex items-center gap-3">
-              <Image className={`w-5 h-5 ${activeTab === 'gallery' ? 'text-white' : 'text-emerald-500 group-hover:text-emerald-400'}`} />
+              <Image className={`w-5 h-5 ${activeTab === 'gallery' ? 'text-white' : 'text-emerald-600 group-hover:text-emerald-700'}`} />
               <span className="font-medium">Galeria de Fotos</span>
             </div>
              {activeTab === 'gallery' && <ChevronRight className="w-4 h-4 opacity-70" />}
@@ -190,22 +190,22 @@ function App() {
         </nav>
 
         {/* User Profile */}
-        <div className="p-4 bg-emerald-950 border-t border-emerald-900">
-          <div className="flex items-center gap-3 px-4 py-3 bg-emerald-900/40 rounded-xl mb-3 border border-emerald-800/50">
+        <div className="p-4 bg-white border-t border-slate-200">
+          <div className="flex items-center gap-3 px-4 py-3 bg-slate-100 rounded-xl mb-3 border border-slate-300">
             <div className="bg-gradient-to-br from-emerald-400 to-teal-600 p-0.5 rounded-full shadow-lg">
-               <div className="bg-emerald-900 p-1 rounded-full">
-                 <UserCircle className="w-6 h-6 text-emerald-100" />
+               <div className="bg-white p-1 rounded-full">
+                 <UserCircle className="w-6 h-6 text-emerald-700" />
                </div>
             </div>
             <div className="flex-1 overflow-hidden">
-              <p className="text-sm font-semibold text-white truncate">Rodrigo</p>
-              <p className="text-xs text-emerald-400 truncate">Secretário SEMAGRIC</p>
+              <p className="text-sm font-semibold text-slate-800 truncate">Rodrigo</p>
+              <p className="text-xs text-emerald-600 truncate">Secretário SEMAGRIC</p>
             </div>
-            <button className="text-emerald-400 hover:text-white transition-colors">
+            <button className="text-slate-500 hover:text-slate-700 transition-colors">
               <Settings className="w-4 h-4" />
             </button>
           </div>
-          <button className="w-full flex items-center justify-center gap-2 text-sm text-red-300/80 hover:text-red-200 hover:bg-red-900/20 py-2.5 rounded-lg transition-all">
+          <button className="w-full flex items-center justify-center gap-2 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 py-2.5 rounded-lg transition-all">
             <LogOut className="w-4 h-4" />
             <span>Sair do Sistema</span>
           </button>

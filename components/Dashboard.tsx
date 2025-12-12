@@ -12,7 +12,7 @@ interface DashboardProps {
   exhibitors: Exhibitor[];
 }
 
-const COLORS = ['#059669', '#10b981', '#34d399', '#6ee7b7'];
+const COLORS = ['#059669', '#10b981', '#34d399', '#6ee7b7', '#0891b2', '#0284c7', '#2563eb', '#7c3aed', '#a855f7', '#d946ef', '#ec4899', '#f43f5e', '#f97316'];
 
 // Helper para formatar moeda BRL
 const formatBRL = (value: number) => {
@@ -60,7 +60,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ exhibitors }) => {
     return acc;
   }, {} as Record<string, number>);
 
-  const typeChartData = Object.entries(typeDataMap).map(([name, value]) => ({ name, value }));
+  const typeChartData = Object.entries(typeDataMap)
+    .map(([name, value]) => ({ name, value }))
+    .sort((a, b) => a.value - b.value); // Ordem crescente
 
   // Projections for 2026 (Based on 20% growth for volume, 15% for visitors, 10% for exhibitors)
   const projVolume = totalVolume * 1.20;
@@ -391,23 +393,23 @@ export const Dashboard: React.FC<DashboardProps> = ({ exhibitors }) => {
       </div>
 
       {/* HERO BANNER - WEB ONLY */}
-      <div className="relative w-full h-[320px] rounded-3xl overflow-hidden shadow-2xl mb-8 group no-print">
-        <div className="absolute inset-0 bg-gray-900">
+      <div className="relative w-full h-[320px] rounded-3xl overflow-hidden shadow-2xl mb-8 group no-print bg-white">
+        <div className="absolute inset-0 bg-white">
              <img 
                 src="https://images.unsplash.com/photo-1625246333195-58197bd47d26?q=80&w=2070&auto=format&fit=crop" 
                 alt="AGROTEC Hero" 
-                className="w-full h-full object-cover opacity-80 mix-blend-overlay"
+                className="w-full h-full object-cover opacity-15"
              />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-r from-emerald-950 via-emerald-900/80 to-transparent flex flex-col justify-center px-10 md:px-16">
+        <div className="absolute inset-0 bg-gradient-to-r from-white via-white/98 to-white flex flex-col justify-center px-10 md:px-16">
             <div className="animate-in fade-in slide-in-from-left duration-700 max-w-3xl">
-                 <div className="flex items-center gap-2 mb-4 text-emerald-300 font-medium tracking-wide text-sm bg-emerald-900/50 w-fit px-3 py-1 rounded-full backdrop-blur-md border border-emerald-500/30">
+                 <div className="flex items-center gap-2 mb-4 text-emerald-700 font-medium tracking-wide text-sm bg-emerald-50 w-fit px-3 py-1 rounded-full border border-emerald-300">
                     <CalendarRange className="w-4 h-4" /> 27 a 29 de Novembro de 2025
                  </div>
-                 <h1 className="text-4xl md:text-7xl font-bold text-white mb-6 tracking-tight drop-shadow-lg leading-none">
-                    AGROTEC <span className="text-emerald-400">2025</span>
+                 <h1 className="text-4xl md:text-7xl font-bold text-slate-800 mb-6 tracking-tight leading-none">
+                    AGROTEC <span className="text-emerald-600">2025</span>
                  </h1>
-                 <p className="text-emerald-50 text-lg md:text-xl font-light leading-relaxed drop-shadow-md border-l-4 border-emerald-500 pl-4">
+                 <p className="text-slate-700 text-lg md:text-xl font-light leading-relaxed border-l-4 border-emerald-600 pl-4">
                     Encontro de agricultura e empreendimentos dos setores primário e de suporte ao agronegócio da região.
                  </p>
             </div>
@@ -489,7 +491,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ exhibitors }) => {
       </div>
 
       {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 gap-8">
         {/* Chart 1: Volume by City */}
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 card break-inside-avoid">
           <div className="flex items-center justify-between mb-6">
@@ -499,7 +501,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ exhibitors }) => {
             </div>
             <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100">Top 5</span>
           </div>
-          <div className="h-72 w-full">
+          <div className="h-96 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={cityChartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
@@ -522,104 +524,53 @@ export const Dashboard: React.FC<DashboardProps> = ({ exhibitors }) => {
                 <h3 className="text-lg font-bold text-slate-800">Distribuição por Categoria</h3>
                 <p className="text-xs text-slate-400">Volume de negócios por perfil de expositor</p>
             </div>
-          <div className="h-72 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={typeChartData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={70}
-                  outerRadius={110}
-                  fill="#8884d8"
-                  paddingAngle={5}
-                  dataKey="value"
-                  stroke="none"
-                >
-                  {typeChartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <RechartsTooltip 
-                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
-                  formatter={(value: number) => formatBRL(value)}
-                />
-                <Legend 
-                  verticalAlign="bottom" 
-                  height={36} 
-                  iconType="circle" 
-                  wrapperStyle={{paddingTop: '20px'}}
-                  formatter={(value, entry: any) => `${value}: ${formatBRL(entry.payload.value)}`}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-      </div>
-      
-      {/* 2026 PROJECTIONS SECTION - NEW */}
-      <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-900 rounded-3xl p-8 md:p-10 text-white shadow-2xl relative overflow-hidden break-inside-avoid">
-        {/* Background decorative elements */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/20 rounded-full blur-[100px] -translate-y-1/3 translate-x-1/3"></div>
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/20 rounded-full blur-[80px] translate-y-1/3 -translate-x-1/3"></div>
-        
-        <div className="relative z-10">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 border-b border-white/10 pb-6">
-            <div className="flex items-center gap-4">
-                 <div className="bg-white/10 p-3 rounded-2xl backdrop-blur-md border border-white/10 shadow-inner">
-                    <Target className="w-8 h-8 text-emerald-300" />
-                 </div>
-                 <div>
-                   <h3 className="text-3xl font-bold text-white tracking-tight">Futuro 2026</h3>
-                   <p className="text-emerald-200/70 text-sm font-medium">Projeções calculadas com base nos indicadores atuais</p>
-                 </div>
-            </div>
-            <div className="bg-white/5 px-4 py-2 rounded-lg text-xs text-white/50 backdrop-blur-sm">
-                Baseado em Taxa de Crescimento Composta (CAGR)
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="group bg-gradient-to-b from-white/10 to-white/5 backdrop-blur-md rounded-2xl p-6 border border-white/10 hover:bg-white/15 transition-all hover:scale-[1.02]">
-              <div className="flex justify-between items-start mb-6">
-                <div className="p-2 bg-emerald-500/20 rounded-lg group-hover:bg-emerald-500/30 transition-colors">
-                  <Wallet className="w-6 h-6 text-emerald-300" />
-                </div>
-                <span className="flex items-center text-xs font-bold text-emerald-300 bg-emerald-900/40 px-2 py-1 rounded-full border border-emerald-500/30">
-                  <ArrowUpRight className="w-3 h-3 mr-1" /> +20%
-                </span>
-              </div>
-              <p className="text-emerald-100/60 text-sm font-medium uppercase tracking-wider mb-1">Volume Projetado</p>
-              <h4 className={`${getProjectionFontSize(formatBRL(projVolume))} font-bold text-white tracking-tight break-words`}>{formatBRL(projVolume)}</h4>
-              <p className="text-xs text-emerald-200/40 mt-3 font-light">Meta de crescimento financeiro</p>
+          <div style={{ display: 'flex', gap: '20px', height: '500px' }}>
+            {/* Gráfico */}
+            <div style={{ flex: '1', minWidth: '300px' }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={typeChartData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={50}
+                    outerRadius={120}
+                    fill="#8884d8"
+                    paddingAngle={2}
+                    dataKey="value"
+                    stroke="none"
+                    minAngle={5}
+                  >
+                    {typeChartData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <RechartsTooltip 
+                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', fontSize: '12px' }}
+                    formatter={(value: number) => formatBRL(value)}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
             </div>
 
-            <div className="group bg-gradient-to-b from-white/10 to-white/5 backdrop-blur-md rounded-2xl p-6 border border-white/10 hover:bg-white/15 transition-all hover:scale-[1.02]">
-              <div className="flex justify-between items-start mb-6">
-                <div className="p-2 bg-blue-500/20 rounded-lg group-hover:bg-blue-500/30 transition-colors">
-                  <Users className="w-6 h-6 text-blue-300" />
-                </div>
-                <span className="flex items-center text-xs font-bold text-blue-300 bg-blue-900/40 px-2 py-1 rounded-full border border-blue-500/30">
-                  <ArrowUpRight className="w-3 h-3 mr-1" /> +15%
-                </span>
+            {/* Legenda Vertical */}
+            <div style={{ flex: '0 0 280px', overflowY: 'auto', paddingRight: '10px' }}>
+              <div style={{ fontSize: '10px', lineHeight: '1.8' }}>
+                {typeChartData.map((entry, index) => (
+                  <div key={index} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px', whiteSpace: 'nowrap' }}>
+                    <div style={{ 
+                      width: '12px', 
+                      height: '12px', 
+                      borderRadius: '50%', 
+                      backgroundColor: COLORS[index % COLORS.length],
+                      flexShrink: 0
+                    }} />
+                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {entry.name}: {formatBRL(entry.value)}
+                    </span>
+                  </div>
+                ))}
               </div>
-              <p className="text-blue-100/60 text-sm font-medium uppercase tracking-wider mb-1">Público Esperado</p>
-              <h4 className={`${getProjectionFontSize(projVisitors.toLocaleString('pt-BR'))} font-bold text-white tracking-tight break-words`}>{projVisitors.toLocaleString('pt-BR')}</h4>
-              <p className="text-xs text-blue-200/40 mt-3 font-light">Estimativa de fluxo de visitantes</p>
-            </div>
-
-            <div className="group bg-gradient-to-b from-white/10 to-white/5 backdrop-blur-md rounded-2xl p-6 border border-white/10 hover:bg-white/15 transition-all hover:scale-[1.02]">
-              <div className="flex justify-between items-start mb-6">
-                <div className="p-2 bg-purple-500/20 rounded-lg group-hover:bg-purple-500/30 transition-colors">
-                  <Store className="w-6 h-6 text-purple-300" />
-                </div>
-                <span className="flex items-center text-xs font-bold text-purple-300 bg-purple-900/40 px-2 py-1 rounded-full border border-purple-500/30">
-                  <ArrowUpRight className="w-3 h-3 mr-1" /> +10%
-                </span>
-              </div>
-              <p className="text-purple-100/60 text-sm font-medium uppercase tracking-wider mb-1">Novos Expositores</p>
-              <h4 className="text-3xl lg:text-4xl font-bold text-white tracking-tight">{projExhibitors}</h4>
-              <p className="text-xs text-purple-200/40 mt-3 font-light">Expansão da área de feira</p>
             </div>
           </div>
         </div>
